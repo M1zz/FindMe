@@ -295,7 +295,7 @@ struct AppClipSetupGuideView: View {
                     Text("QR URL 형식")
                         .font(.headline)
                     
-                    Text("https://m1zz.github.io/l?lat=37.5&lng=127&name=장소&memo=메모")
+                    Text("https://m1zz.github.io/FindMe/l?lat=37.5&lng=127&name=장소&memo=메모")
                         .font(.system(.caption, design: .monospaced))
                         .padding()
                         .background(Color(.systemGray6))

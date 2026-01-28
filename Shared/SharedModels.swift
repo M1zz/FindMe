@@ -58,8 +58,8 @@ struct LocationData: Codable, Equatable {
     // MARK: - URL 생성 (App Clip용)
     
     /// App Clip URL 생성
-    /// 형식: https://m1zz.github.io/l?lat=37.5665&lng=126.9780&name=스타벅스&memo=2층창가&owner=김멘토&token=xxx
-    func toAppClipURL(baseURL: String = "https://m1zz.github.io/l") -> URL? {
+    /// 형식: https://m1zz.github.io/FindMe/l?lat=37.5665&lng=126.9780&name=스타벅스&memo=2층창가&owner=김멘토&token=xxx
+    func toAppClipURL(baseURL: String = "https://m1zz.github.io/FindMe/l") -> URL? {
         var components = URLComponents(string: baseURL)
         components?.queryItems = [
             URLQueryItem(name: "lat", value: String(format: "%.6f", latitude)),
