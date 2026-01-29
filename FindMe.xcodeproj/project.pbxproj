@@ -10,12 +10,10 @@
 		AA0001001 /* FindMeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002001 /* FindMeApp.swift */; };
 		AA0001002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002002 /* ContentView.swift */; };
 		AA0001003 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002003 /* HomeView.swift */; };
-		AA0001004 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002004 /* SearchView.swift */; };
 		AA0001005 /* QRDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002005 /* QRDetailView.swift */; };
 		AA0001006 /* SavedLocationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002006 /* SavedLocationsView.swift */; };
 		AA0001007 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002007 /* SettingsView.swift */; };
 		AA0001008 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002008 /* DataManager.swift */; };
-		AA0001009 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002009 /* LocationManager.swift */; };
 		AA0001010 /* SharedModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002010 /* SharedModels.swift */; };
 		AA0001011 /* QRGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0002011 /* QRGenerator.swift */; };
 		AA0001012 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA0002012 /* Assets.xcassets */; };
@@ -60,12 +58,10 @@
 		AA0002001 /* FindMeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindMeApp.swift; sourceTree = "<group>"; };
 		AA0002002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		AA0002003 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
-		AA0002004 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		AA0002005 /* QRDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRDetailView.swift; sourceTree = "<group>"; };
 		AA0002006 /* SavedLocationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedLocationsView.swift; sourceTree = "<group>"; };
 		AA0002007 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		AA0002008 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
-		AA0002009 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		AA0002010 /* SharedModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedModels.swift; sourceTree = "<group>"; };
 		AA0002011 /* QRGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRGenerator.swift; sourceTree = "<group>"; };
 		AA0002012 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -119,12 +115,10 @@
 				AA0002001 /* FindMeApp.swift */,
 				AA0002002 /* ContentView.swift */,
 				AA0002003 /* HomeView.swift */,
-				AA0002004 /* SearchView.swift */,
 				AA0002005 /* QRDetailView.swift */,
 				AA0002006 /* SavedLocationsView.swift */,
 				AA0002007 /* SettingsView.swift */,
 				AA0002008 /* DataManager.swift */,
-				AA0002009 /* LocationManager.swift */,
 				AA0002016 /* NotificationManager.swift */,
 				AA0002017 /* NotificationsView.swift */,
 				AA0002012 /* Assets.xcassets */,
@@ -278,12 +272,10 @@
 				AA0001001 /* FindMeApp.swift in Sources */,
 				AA0001002 /* ContentView.swift in Sources */,
 				AA0001003 /* HomeView.swift in Sources */,
-				AA0001004 /* SearchView.swift in Sources */,
 				AA0001005 /* QRDetailView.swift in Sources */,
 				AA0001006 /* SavedLocationsView.swift in Sources */,
 				AA0001007 /* SettingsView.swift in Sources */,
 				AA0001008 /* DataManager.swift in Sources */,
-				AA0001009 /* LocationManager.swift in Sources */,
 				AA0001010 /* SharedModels.swift in Sources */,
 				AA0001011 /* QRGenerator.swift in Sources */,
 				AA0001014 /* NotificationManager.swift in Sources */,

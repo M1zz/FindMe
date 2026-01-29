@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import CoreLocation
 
 @MainActor
 class DataManager: ObservableObject {
