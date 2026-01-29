@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import StoreKit
 
 struct HomeView: View {
     @EnvironmentObject var dataManager: DataManager
     @EnvironmentObject var notificationManager: NotificationManager
+    @Environment(\.requestReview) var requestReview
 
     @State private var locationData = LocationData()
     @State private var ownerName = ""
@@ -183,6 +185,17 @@ struct HomeView: View {
 
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.success)
+
+        // 저장 횟수 기반 리뷰 요청 (3, 10, 30번째)
+        let saveCountKey = "saveCount"
+        var count = UserDefaults.standard.integer(forKey: saveCountKey) + 1
+        UserDefaults.standard.set(count, forKey: saveCountKey)
+
+        if count == 3 || count == 10 || count == 30 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                requestReview()
+            }
+        }
     }
 }
 

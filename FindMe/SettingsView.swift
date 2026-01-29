@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import StoreKit
 
 struct SettingsView: View {
     @EnvironmentObject var dataManager: DataManager
+    @Environment(\.requestReview) var requestReview
 
     @State private var showingDeleteAlert = false
 
@@ -75,6 +77,16 @@ struct SettingsView: View {
                         Spacer()
                         Text("1.0.0")
                             .foregroundStyle(.secondary)
+                    }
+
+                    Button {
+                        requestReview()
+                    } label: {
+                        Label("앱 평가하기", systemImage: "star")
+                    }
+
+                    Link(destination: URL(string: "https://m1zz.github.io/FindMe/support")!) {
+                        Label("지원 및 문의", systemImage: "questionmark.bubble")
                     }
                 } header: {
                     Text("정보")
