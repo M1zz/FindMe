@@ -9,25 +9,25 @@ import SwiftUI
 
 struct QRDetailView: View {
     @Environment(\.dismiss) private var dismiss
-    
+
     let locationData: LocationData
-    
+
     @State private var copiedURL = false
     @State private var savedToPhotos = false
-    
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
                     // QR 코드
                     qrCodeSection
-                    
-                    // 위치 정보
+
+                    // 메모 정보
                     locationInfoSection
-                    
+
                     // 공유 옵션
                     shareOptionsSection
-                    
+
                     // 사용 안내
                     usageGuideSection
                 }
@@ -43,7 +43,7 @@ struct QRDetailView: View {
             }
         }
     }
-    
+
     // MARK: - QR Code Section
     private var qrCodeSection: some View {
         VStack(spacing: 16) {
@@ -53,7 +53,7 @@ struct QRDetailView: View {
                 .background(Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: 20))
                 .shadow(color: .black.opacity(0.1), radius: 10)
-            
+
             // URL
             if let url = locationData.toAppClipURL() {
                 HStack {
@@ -62,7 +62,7 @@ struct QRDetailView: View {
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                         .truncationMode(.middle)
-                    
+
                     Button {
                         copyURL()
                     } label: {
@@ -80,51 +80,40 @@ struct QRDetailView: View {
         .background(Color(.systemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 20))
     }
-    
+
     // MARK: - Location Info Section
     private var locationInfoSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             if !locationData.name.isEmpty {
                 HStack {
-                    Image(systemName: "mappin.circle.fill")
-                        .foregroundStyle(.red)
+                    Image(systemName: "text.bubble.fill")
+                        .foregroundStyle(.blue)
                     Text(locationData.name)
                         .font(.headline)
                 }
             }
-            
-            if !locationData.address.isEmpty {
-                Text(locationData.address)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-            
+
             if !locationData.memo.isEmpty {
                 HStack(alignment: .top) {
-                    Image(systemName: "text.bubble.fill")
-                        .foregroundStyle(.blue)
+                    Image(systemName: "note.text")
+                        .foregroundStyle(.orange)
                     Text(locationData.memo)
                         .font(.subheadline)
                 }
             }
-            
-            // 좌표
-            Text(String(format: "위도 %.4f, 경도 %.4f", locationData.latitude, locationData.longitude))
-                .font(.caption)
-                .foregroundStyle(.tertiary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background(Color(.systemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 20))
     }
-    
+
     // MARK: - Share Options Section
     private var shareOptionsSection: some View {
         VStack(spacing: 12) {
             Text("공유하기")
                 .font(.headline)
-            
+
             // 버튼 그리드
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                 // QR 이미지 저장
@@ -135,7 +124,7 @@ struct QRDetailView: View {
                 ) {
                     saveQRImage()
                 }
-                
+
                 // 공유
                 ShareOptionButton(
                     icon: "square.and.arrow.up",
@@ -144,28 +133,10 @@ struct QRDetailView: View {
                 ) {
                     shareQR()
                 }
-                
-                // Apple Maps로 열기
-                ShareOptionButton(
-                    icon: "map",
-                    title: "Apple Maps",
-                    color: .orange
-                ) {
-                    openInAppleMaps()
-                }
-                
-                // Google Maps로 열기
-                ShareOptionButton(
-                    icon: "globe",
-                    title: "Google Maps",
-                    color: .red
-                ) {
-                    openInGoogleMaps()
-                }
             }
-            
+
             if savedToPhotos {
-                Text("✓ 사진에 저장되었습니다")
+                Text("사진에 저장되었습니다")
                     .font(.caption)
                     .foregroundStyle(.green)
             }
@@ -174,23 +145,23 @@ struct QRDetailView: View {
         .background(Color(.systemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 20))
     }
-    
+
     // MARK: - Usage Guide Section
     private var usageGuideSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Label("사용 방법", systemImage: "info.circle")
                 .font(.headline)
-            
+
             VStack(alignment: .leading, spacing: 8) {
                 GuideRow(number: 1, text: "QR 이미지를 저장하거나 공유하세요")
                 GuideRow(number: 2, text: "상대방이 QR을 스캔하면")
-                GuideRow(number: 3, text: "App Clip이 열리며 위치가 표시됩니다")
+                GuideRow(number: 3, text: "App Clip이 열리며 메모가 표시됩니다")
                 GuideRow(number: 4, text: "앱 설치 없이 바로 확인 가능!")
             }
-            
+
             Divider()
-            
-            Text("💡 명함에 인쇄하면 영구적으로 사용할 수 있어요")
+
+            Text("명함에 인쇄하면 영구적으로 사용할 수 있어요")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -198,71 +169,66 @@ struct QRDetailView: View {
         .background(Color(.systemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 20))
     }
-    
+
     // MARK: - Actions
     private func copyURL() {
         guard let url = locationData.toAppClipURL() else { return }
         UIPasteboard.general.string = url.absoluteString
-        
+
         withAnimation { copiedURL = true }
-        
+
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.success)
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             withAnimation { copiedURL = false }
         }
     }
-    
+
     private func saveQRImage() {
         if let image = QRGenerator.shared.generateLocationQR(location: locationData, size: 600) {
             UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-            
+
             withAnimation { savedToPhotos = true }
-            
+
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.success)
-            
+
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 withAnimation { savedToPhotos = false }
             }
         }
     }
-    
+
     private func shareQR() {
         guard let image = QRGenerator.shared.generateLocationQR(location: locationData, size: 600),
               let url = locationData.toAppClipURL() else { return }
-        
+
         let text = """
-        📍 내 위치를 확인하세요!
-        
-        \(locationData.name.isEmpty ? "위치" : locationData.name)
+        메모를 확인하세요!
+
+        \(locationData.name.isEmpty ? "메모" : locationData.name)
         \(locationData.memo.isEmpty ? "" : "메모: \(locationData.memo)")
-        
+
         \(url.absoluteString)
         """
-        
+
         let activityVC = UIActivityViewController(
             activityItems: [text, image],
             applicationActivities: nil
         )
-        
+
+        // iPad 지원
+        activityVC.popoverPresentationController?.sourceView = UIView()
+
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = windowScene.windows.first,
-           let rootVC = window.rootViewController {
-            rootVC.present(activityVC, animated: true)
-        }
-    }
-    
-    private func openInAppleMaps() {
-        if let url = locationData.toAppleMapsURL() {
-            UIApplication.shared.open(url)
-        }
-    }
-    
-    private func openInGoogleMaps() {
-        if let url = locationData.toGoogleMapsURL() {
-            UIApplication.shared.open(url)
+           let window = windowScene.windows.first {
+            // Sheet에서 present 할 때는 최상위 VC를 찾아야 함
+            var topVC = window.rootViewController
+            while let presented = topVC?.presentedViewController {
+                topVC = presented
+            }
+            topVC?.present(activityVC, animated: true)
         }
     }
 }
@@ -273,14 +239,14 @@ struct ShareOptionButton: View {
     let title: String
     let color: Color
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             VStack(spacing: 8) {
                 Image(systemName: icon)
                     .font(.title2)
                     .foregroundStyle(color)
-                
+
                 Text(title)
                     .font(.caption)
                     .foregroundStyle(.primary)
@@ -297,7 +263,7 @@ struct ShareOptionButton: View {
 struct GuideRow: View {
     let number: Int
     let text: String
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Text("\(number)")
@@ -307,7 +273,7 @@ struct GuideRow: View {
                 .frame(width: 20, height: 20)
                 .background(Color.blue)
                 .clipShape(Circle())
-            
+
             Text(text)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -317,10 +283,7 @@ struct GuideRow: View {
 
 #Preview {
     QRDetailView(locationData: LocationData(
-        latitude: 37.5665,
-        longitude: 126.9780,
         name: "스타벅스 강남역점",
-        memo: "2층 창가 자리",
-        address: "서울 강남구 강남대로 396"
+        memo: "2층 창가 자리"
     ))
 }

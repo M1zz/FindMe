@@ -8,6 +8,7 @@
 
 import SwiftUI
 import UserNotifications
+import CloudKit
 
 @main
 struct FindMeApp: App {
@@ -23,8 +24,10 @@ struct FindMeApp: App {
                 .task {
                     // 알림 권한 요청
                     await notificationManager.requestPermission()
-                    // 로컬 토큰 생성 (실제 배포 시에는 APNs 토큰 사용)
-                    _ = notificationManager.generateLocalToken()
+                    // ownerID 생성
+                    _ = notificationManager.generateOwnerID()
+                    // CloudKit 구독 설정
+                    notificationManager.setupCloudKitSubscription()
                 }
         }
     }
@@ -37,25 +40,37 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
+        print("[APP] didFinishLaunchingWithOptions")
         UNUserNotificationCenter.current().delegate = self
         return true
     }
     
-    // MARK: - Push Token
+    // MARK: - Push Token (APNs 등록은 유지, 토큰 저장은 불필요)
     func application(
         _ application: UIApplication,
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
-        Task { @MainActor in
-            NotificationManager.shared.handleDeviceToken(deviceToken)
-        }
+        print("[STEP 3] APNs 등록 성공 (CloudKit 구독용, 토큰 저장 불필요)")
     }
-    
+
     func application(
         _ application: UIApplication,
         didFailToRegisterForRemoteNotificationsWithError error: Error
     ) {
-        print("Failed to register for remote notifications: \(error)")
+        print("[STEP 3] APNs 등록 실패: \(error)")
+    }
+
+    // MARK: - Remote Notification (CloudKit)
+    func application(
+        _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ) {
+        print("[PUSH] didReceiveRemoteNotification 호출됨")
+        Task { @MainActor in
+            NotificationManager.shared.handleCloudKitNotification(userInfo: userInfo)
+        }
+        completionHandler(.newData)
     }
     
     // MARK: - Foreground Notification
