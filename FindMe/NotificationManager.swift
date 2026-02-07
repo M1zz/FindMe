@@ -20,6 +20,7 @@ class NotificationManager: NSObject, ObservableObject {
 
     private let ownerIDKey = "ownerID"
     private let notificationsKey = "viewNotifications"
+    private let subscriptionID = "findme-view-notification"
     private let container = CKContainer(identifier: "iCloud.com.leeo.FindMe")
     
     override init() {
@@ -69,11 +70,18 @@ class NotificationManager: NSObject, ObservableObject {
 
     // MARK: - CloudKit Subscription
     func setupCloudKitSubscription() {
+        guard !ownerID.isEmpty else {
+            print("[STEP 4] ownerID가 비어있어 구독 스킵")
+            return
+        }
+
         print("[STEP 4] CloudKit 구독 설정 시작 - ownerID: \(ownerID)")
+
         let predicate = NSPredicate(format: "ownerID == %@", ownerID)
         let subscription = CKQuerySubscription(
             recordType: "ViewNotification",
             predicate: predicate,
+            subscriptionID: subscriptionID,
             options: .firesOnRecordCreation
         )
 
@@ -86,7 +94,9 @@ class NotificationManager: NSObject, ObservableObject {
 
         let database = container.publicCloudDatabase
         database.save(subscription) { _, error in
-            if let error = error {
+            if let error = error as? CKError, error.code == .serverRejectedRequest {
+                print("[STEP 4] CloudKit 구독 이미 존재 - 정상")
+            } else if let error = error {
                 print("[STEP 4] CloudKit 구독 에러: \(error.localizedDescription)")
             } else {
                 print("[STEP 4] CloudKit 구독 생성 성공")
@@ -119,8 +129,13 @@ class NotificationManager: NSObject, ObservableObject {
             locationName: locationName,
             viewerName: viewerName
         )
-        addNotification(viewNotification)
-        print("[PUSH] 알림 저장 + 로컬 알림 표시 완료")
+        // 데이터만 저장 (로컬 알림 X - CloudKit 푸시가 이미 alertBody로 알림 표시함)
+        viewNotifications.insert(viewNotification, at: 0)
+        if viewNotifications.count > 100 {
+            viewNotifications = Array(viewNotifications.prefix(100))
+        }
+        saveData()
+        print("[PUSH] 알림 데이터 저장 완료")
     }
     
     // MARK: - Load/Save Notifications
