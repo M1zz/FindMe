@@ -50,9 +50,16 @@ struct LocationData: Codable, Equatable {
 
     /// URL에서 LocationData 파싱
     static func fromURL(_ url: URL) -> LocationData? {
+        print("[URL파싱] 원본 URL: \(url.absoluteString)")
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
               let queryItems = components.queryItems else {
+            print("[URL파싱] ❌ URLComponents 파싱 실패")
             return nil
+        }
+
+        print("[URL파싱] query items 수: \(queryItems.count)")
+        for item in queryItems {
+            print("[URL파싱]   \(item.name) = \(item.value ?? "nil")")
         }
 
         var data = LocationData()
@@ -72,6 +79,7 @@ struct LocationData: Codable, Equatable {
             }
         }
 
+        print("[URL파싱] 결과 - name: \(data.name), ownerID: \(data.ownerID), ownerName: \(data.ownerName)")
         return data.isValid ? data : nil
     }
 }

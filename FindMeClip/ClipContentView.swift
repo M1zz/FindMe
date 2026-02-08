@@ -14,14 +14,11 @@ struct ClipContentView: View {
     @State private var showingNameInput = false
     @State private var notificationSent = false
     @State private var showingNotificationBanner = false
+    @State private var bannerMessage = ""
 
     var body: some View {
         if let data = locationData {
             memoView(data)
-                .onAppear {
-                    // 메모 확인 시 알림 전송
-                    sendViewNotification(data)
-                }
         } else {
             loadingView
         }
@@ -85,19 +82,34 @@ struct ClipContentView: View {
                     .shadow(color: .black.opacity(0.05), radius: 5)
 
                     // 버튼들
-                    HStack(spacing: 12) {
+                    VStack(spacing: 12) {
+                        // 익명으로 띵똥
+                        Button {
+                            sendViewNotification(data)
+                        } label: {
+                            Label("익명으로 띵똥", systemImage: "bell.fill")
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(notificationSent ? Color.gray : Color.blue)
+                                .foregroundStyle(.white)
+                                .clipShape(RoundedRectangle(cornerRadius: 14))
+                        }
+                        .disabled(notificationSent)
+
                         // 내 이름 알리기
                         Button {
                             showingNameInput = true
                         } label: {
-                            Label("내 이름 알리기", systemImage: "person.crop.circle.badge.plus")
+                            Label("내 이름으로 띵똥", systemImage: "person.crop.circle.badge.plus")
                                 .font(.headline)
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color.green)
+                                .background(notificationSent ? Color.gray : Color.green)
                                 .foregroundStyle(.white)
                                 .clipShape(RoundedRectangle(cornerRadius: 14))
                         }
+                        .disabled(notificationSent)
                     }
 
                     // 전체 앱 다운로드
@@ -116,7 +128,7 @@ struct ClipContentView: View {
                 .padding()
             }
         }
-        .alert("내 이름 알리기", isPresented: $showingNameInput) {
+        .alert("내 이름으로 띵똥", isPresented: $showingNameInput) {
             TextField("이름", text: $viewerName)
             Button("취소", role: .cancel) {}
             Button("알리기") {
@@ -133,7 +145,7 @@ struct ClipContentView: View {
             Image(systemName: "bell.fill")
                 .foregroundStyle(.white)
 
-            Text("\(data.ownerName.isEmpty ? "상대방" : data.ownerName)님에게 알림을 보냈습니다")
+            Text(bannerMessage)
                 .font(.subheadline)
                 .foregroundStyle(.white)
 
@@ -161,7 +173,15 @@ struct ClipContentView: View {
 
     // MARK: - Send Notification
     private func sendViewNotification(_ data: LocationData) {
-        guard !notificationSent else { return }
+        guard !notificationSent else {
+            print("[CLIP-VIEW] 이미 알림 전송됨 - 중복 방지")
+            return
+        }
+
+        print("[CLIP-VIEW] ===== 확인 알림 전송 시작 =====")
+        print("[CLIP-VIEW] data.ownerID: \(data.ownerID) (길이: \(data.ownerID.count))")
+        print("[CLIP-VIEW] data.name: \(data.name)")
+
         notificationSent = true
 
         Task {
@@ -171,23 +191,35 @@ struct ClipContentView: View {
                     locationName: data.name.isEmpty ? "공유된 메모" : data.name,
                     viewerName: ""
                 )
+                print("[CLIP-VIEW] ✅ 확인 알림 전송 성공")
+                bannerMessage = "\(data.ownerName.isEmpty ? "상대방" : data.ownerName)님에게 알림을 보냈습니다"
             } catch {
-                print("❌ View notification failed: \(error.localizedDescription)")
+                print("[CLIP-VIEW] ❌ 확인 알림 전송 실패: \(error.localizedDescription)")
+                bannerMessage = "알림 전송에 실패했습니다"
+                notificationSent = false
             }
 
-            withAnimation {
-                showingNotificationBanner = true
-            }
-
+            withAnimation { showingNotificationBanner = true }
             try? await Task.sleep(nanoseconds: 3_000_000_000)
-            withAnimation {
-                showingNotificationBanner = false
-            }
+            withAnimation { showingNotificationBanner = false }
         }
     }
 
     private func sendNameNotification(_ data: LocationData) {
-        guard !viewerName.isEmpty else { return }
+        guard !viewerName.isEmpty else {
+            print("[CLIP-VIEW] 이름이 비어있어 전송 취소")
+            return
+        }
+        guard !notificationSent else {
+            print("[CLIP-VIEW] 이미 알림 전송됨 - 중복 방지")
+            return
+        }
+
+        print("[CLIP-VIEW] ===== 이름 알림 전송 시작 =====")
+        print("[CLIP-VIEW] viewerName: \(viewerName)")
+        print("[CLIP-VIEW] ownerID: \(data.ownerID)")
+
+        notificationSent = true
 
         Task {
             do {
@@ -196,18 +228,17 @@ struct ClipContentView: View {
                     locationName: data.name.isEmpty ? "공유된 메모" : data.name,
                     viewerName: viewerName
                 )
+                print("[CLIP-VIEW] ✅ 이름 알림 전송 성공")
+                bannerMessage = "\(data.ownerName.isEmpty ? "상대방" : data.ownerName)님에게 이름을 알렸습니다"
             } catch {
-                print("❌ Name notification failed: \(error.localizedDescription)")
+                print("[CLIP-VIEW] ❌ 이름 알림 전송 실패: \(error.localizedDescription)")
+                bannerMessage = "알림 전송에 실패했습니다"
+                notificationSent = false
             }
 
-            withAnimation {
-                showingNotificationBanner = true
-            }
-
+            withAnimation { showingNotificationBanner = true }
             try? await Task.sleep(nanoseconds: 3_000_000_000)
-            withAnimation {
-                showingNotificationBanner = false
-            }
+            withAnimation { showingNotificationBanner = false }
         }
     }
 

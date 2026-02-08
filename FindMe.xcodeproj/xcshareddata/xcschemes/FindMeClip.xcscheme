@@ -53,7 +53,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "_XCAppClipURL"
-            value = "https://m1zz.github.io/FindMe/l?lat=37.5665&amp;lng=126.978&amp;name=&#xc11c;&#xc6b8;&#xc2dc;&#xccad;&amp;memo=&#xd14c;&#xc2a4;&#xd2b8;"
+            value = "https://m1zz.github.io/FindMe/l?owner=TestUser&amp;memo=&#xd14c;&#xc2a4;&#xd2b8;&amp;name=&#xc11c;&#xc6b8;&#xc2dc;&#xccad;&amp;oid=dd164f3ca40246fcadad22172e287030"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

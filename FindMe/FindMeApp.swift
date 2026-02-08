@@ -22,12 +22,18 @@ struct FindMeApp: App {
                 .environmentObject(dataManager)
                 .environmentObject(notificationManager)
                 .task {
+                    print("[APP] ===== 앱 초기화 시작 =====")
                     // 알림 권한 요청
-                    await notificationManager.requestPermission()
+                    let granted = await notificationManager.requestPermission()
+                    print("[APP] 알림 권한 결과: \(granted)")
                     // ownerID 생성
-                    _ = notificationManager.generateOwnerID()
+                    let oid = notificationManager.generateOwnerID()
+                    print("[APP] ownerID: \(oid)")
                     // CloudKit 구독 설정
                     notificationManager.setupCloudKitSubscription()
+                    // 진단 실행
+                    notificationManager.diagnose()
+                    print("[APP] ===== 앱 초기화 완료 =====")
                 }
         }
     }
@@ -50,14 +56,17 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         _ application: UIApplication,
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
-        print("[STEP 3] APNs 등록 성공 (CloudKit 구독용, 토큰 저장 불필요)")
+        let tokenString = deviceToken.map { String(format: "%02x", $0) }.joined()
+        print("[STEP 3] ✅ APNs 등록 성공")
+        print("[STEP 3] Device Token (\(deviceToken.count)bytes): \(tokenString)")
     }
 
     func application(
         _ application: UIApplication,
         didFailToRegisterForRemoteNotificationsWithError error: Error
     ) {
-        print("[STEP 3] APNs 등록 실패: \(error)")
+        print("[STEP 3] ❌ APNs 등록 실패: \(error.localizedDescription)")
+        print("[STEP 3] 에러 상세: \(error)")
     }
 
     // MARK: - Remote Notification (CloudKit)
@@ -66,7 +75,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         didReceiveRemoteNotification userInfo: [AnyHashable: Any],
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
-        print("[PUSH] didReceiveRemoteNotification 호출됨")
+        print("[PUSH] ===== didReceiveRemoteNotification 호출됨 =====")
+        print("[PUSH] 앱 상태: \(application.applicationState.rawValue) (0=active, 1=inactive, 2=background)")
+        print("[PUSH] userInfo: \(userInfo)")
         Task { @MainActor in
             NotificationManager.shared.handleCloudKitNotification(userInfo: userInfo)
         }

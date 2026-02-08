@@ -12,11 +12,24 @@ struct SettingsView: View {
     @EnvironmentObject var dataManager: DataManager
     @Environment(\.requestReview) var requestReview
 
+    @State private var ownerName = ""
     @State private var showingDeleteAlert = false
 
     var body: some View {
         NavigationStack {
             Form {
+                // 내 이름
+                Section {
+                    TextField("이름을 입력하세요", text: $ownerName)
+                        .onChange(of: ownerName) { _, newValue in
+                            UserDefaults.standard.set(newValue, forKey: "ownerName")
+                        }
+                } header: {
+                    Text("내 이름")
+                } footer: {
+                    Text("QR 스캔 시 상대방에게 표시되는 이름입니다")
+                }
+
                 // App Clip 안내
                 Section {
                     VStack(alignment: .leading, spacing: 12) {
@@ -75,7 +88,7 @@ struct SettingsView: View {
                     HStack {
                         Label("버전", systemImage: "info.circle")
                         Spacer()
-                        Text("1.0.1")
+                        Text("1.0.2")
                             .foregroundStyle(.secondary)
                     }
 
@@ -104,6 +117,9 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("설정")
+            .onAppear {
+                ownerName = UserDefaults.standard.string(forKey: "ownerName") ?? ""
+            }
             .alert("데이터 삭제", isPresented: $showingDeleteAlert) {
                 Button("취소", role: .cancel) {}
                 Button("삭제", role: .destructive) {
